@@ -1,3 +1,4 @@
+// useFirebase.ts
 import { initializeApp } from 'firebase/app'
 import {
   getFirestore,
