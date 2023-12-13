@@ -63,7 +63,7 @@ const addUser = async (user: User): Promise<void> => {
   })
 }
 
-const updateUser = async (game: Partial<Game>): Promise<void> => {
+const updateUser = async (game: Partial<User>): Promise<void> => {
   const gameRef = doc(db, 'games', userId.value)
 
   return updateDoc(gameRef, game)

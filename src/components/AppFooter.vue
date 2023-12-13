@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBle } from '../composables/useBle.ts'
-import { Bluetooth, BluetoothOff, BluetoothConnected } from 'lucide-vue-next'
+import { BluetoothOff, BluetoothConnected } from 'lucide-vue-next'
 const { enableNotifications, listen, device, state, disconnect: disable, reconnect } = useBle()
 const activate = async () => {
   enableNotifications().then(() => {
