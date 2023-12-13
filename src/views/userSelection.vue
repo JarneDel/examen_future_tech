@@ -59,7 +59,9 @@ const login = async () => {
     </h1>
     <form @submit.prevent="login">
 
-      <select :value="existingUser" @change="existingUser = $event.target.value">
+      <select :value="existingUser" @change="(event) => {
+        existingUser = (event.target as HTMLInputElement).value
+      }">
         <option value="" disabled selected>Select user</option>
         <option :value="user.name" v-for="user of users" :id="user.name">
           {{ user.name }}
@@ -87,6 +89,7 @@ div.container {
   align-items: center;
   height: 100vh;
 }
+
 .container h1 {
   font-size: 2rem;
   margin-bottom: 2rem;
