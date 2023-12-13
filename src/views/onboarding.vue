@@ -2,6 +2,13 @@
   <div
     class="m-auto w-1/2 h-screen flex flex-col items-center justify-center gap-6"
   >
+    <RouterLink to="/" class="w-full">
+      <button
+        class="w-fit px-4 py-2 bg-black rounded-md flex items-center text-white"
+      >
+        <ArrowLeft /> Back
+      </button>
+    </RouterLink>
     <h1 class="text-3xl font-bold underline">Besturing</h1>
     <p class="w-2/3">
       Draai je hand naar voor ⬆️, achter ⬇️, links ⬅️ en rechts ➡️ om het spel
@@ -19,9 +26,11 @@
         :style="`left: ${translateX}px; top: ${translateY}px`"
       ></div>
       <!-- <button @click="">Calibrate</button> -->
-      <button class="w-full bg-blue-500 rounded-md py-2 text-white mt-12">
-        Speel
-      </button>
+      <RouterLink :to="gameUrl" class="w-full">
+        <button class="w-full bg-blue-500 rounded-md py-2 text-white mt-12">
+          Speel
+        </button>
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -29,6 +38,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useBle } from '../composables/useBle'
+import { ArrowLeft } from 'lucide-vue-next'
 
 const { gyro } = useBle()
 
@@ -41,6 +51,8 @@ const gyroZZero = ref(0)
 const translateX = ref('left-1/2')
 const translateY = ref('top-1/2')
 
+const gameUrl = ref('')
+
 // run function to calculate position from acc data (reset position with space)
 // use setInterval to run function every 100ms
 // use onMounted and onUnmounted to start and stop the interval
@@ -52,8 +64,10 @@ const calculatePosition = () => {
   // consider gyroXZero and gyroYZero as the original position
   // 2 decimals
 
-  positionX.value = gyro.value.x - gyroXZero.value
-  positionZ.value = gyro.value.y - gyroZZero.value
+  if (gyro.value) {
+    positionX.value = gyro.value.x - gyroXZero.value
+    positionZ.value = gyro.value.y - gyroZZero.value
+  }
 
   // move ref gyroBall to the calculated position
   // use transform: translate(x, y) to move the ball
@@ -84,5 +98,12 @@ onMounted(() => {
       calibrate()
     }
   })
+
+  // get url value from the url
+  // use onMounted and onUnmounted to start and stop the event listener
+  const url = window.location.href
+  const urlParams = new URL(url)
+  gameUrl.value = urlParams.searchParams.get('game')!
+  console.log(gameUrl.value)
 })
 </script>

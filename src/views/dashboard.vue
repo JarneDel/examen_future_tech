@@ -12,32 +12,29 @@ const games = ref([
     duration: 0,
     score: 0,
   },
-
-
 ])
-
 
 const { allGames, addGame } = useFirebase()
 const isFetching = ref(false)
 
 const getAllGames = async () => {
   isFetching.value = true
-  allGames().then((data) => {
+  allGames().then(data => {
     isFetching.value = false
     const gameDataMap = new Map()
-    data.forEach((gameData) => {
+    data.forEach(gameData => {
       gameDataMap.set(gameData.name, gameData)
     })
 
-    games.value.forEach((game) => {
+    games.value.forEach(game => {
       const gameData = gameDataMap.get(game.name)
       if (!gameData) return
-      game.duration = gameData.duration > game.duration ? gameData.duration : game.duration
+      game.duration =
+        gameData.duration > game.duration ? gameData.duration : game.duration
       game.score = gameData.score > game.score ? gameData.score : game.score
     })
   })
 }
-
 
 onMounted(() => {
   getAllGames()
@@ -54,13 +51,9 @@ const addMazeGame = () => {
   }
   addGame(newGame).then(() => {
     getAllGames()
-
   })
 }
-
-
 </script>
-
 
 <template>
   <h1>Dashboard</h1>
@@ -74,16 +67,15 @@ const addMazeGame = () => {
           v-for="game in games"
           :key="game.id"
           class="bg-white p-4 rounded-md shadow-md"
-          :to="game.url"
+          :to="`onboarding?game=${game.url}`"
         >
           <h3 class="text-xl font-bold mb-2">{{ game.name }}</h3>
           <p class="text-gray-600">{{ game.description }}</p>
           <p class="mt-2">Duration: {{ game.duration }} seconds</p>
-          <p>Score: {{ game.score }}</p>
+          <p>Highscore: {{ game.score }}</p>
         </RouterLink>
         <div v-else-if="isFetching">
           <h2 class="text-2xl font-bold mb-2">Loading...</h2>
-
         </div>
         <div v-else>
           <h2 class="text-2xl font-bold mb-2">No Games Found</h2>
