@@ -18,6 +18,11 @@ const router = createRouter({
     },
 
     {
+      path: '/catch-game',
+      component: () => import('../views/CatchGame.vue'),
+    },
+
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('../views/NotFound.vue'),
     },

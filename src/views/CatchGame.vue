@@ -1,25 +1,20 @@
+<template>
+  <div>dsqfdsfd</div>
+</template>
+
 <script setup lang="ts">
-import { useBle } from '../composables/useBle.ts'
+import { ref } from 'vue'
+import { useBle } from '../composables/useBle'
 
 const { enableNotifications, listen } = useBle()
+
 const activate = async () => {
   enableNotifications().then(() => {
     listen((gyro, acc, mag) => {
       console.log(gyro, acc, mag)
-    }, (pressure) => {
-      console.log(pressure)
     })
   })
 }
+
+activate()
 </script>
-
-<template>
-  <button @click="activate">
-    Init ble
-
-  </button>
-</template>
-
-<style scoped>
-
-</style>

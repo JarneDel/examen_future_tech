@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import TestBluetooth from './components/TestBluetooth.vue'
+import AppFooter from './components/AppFooter.vue'
 
 
 </script>
 
 <template>
   <RouterView />
-  <TestBluetooth/>
+  <AppFooter/>
 </template>
 
 <style scoped>
