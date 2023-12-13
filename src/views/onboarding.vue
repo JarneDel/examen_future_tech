@@ -48,32 +48,18 @@ const positionZ = ref(0)
 const gyroXZero = ref(0)
 const gyroZZero = ref(0)
 
-const translateX = ref('left-1/2')
-const translateY = ref('top-1/2')
+const translateX = ref('0')
+const translateY = ref('0')
 
 const gameUrl = ref('')
 
-// run function to calculate position from acc data (reset position with space)
-// use setInterval to run function every 100ms
-// use onMounted and onUnmounted to start and stop the interval
-
 const calculatePosition = () => {
-  // position is calculated from the acc data, when holding the device still, the position should stay the same and should not go to 0
-  // when the device is moved, the position should change accordingly
-  // when the device is moved back to the original position, the position should go back to the original position
-  // consider gyroXZero and gyroYZero as the original position
-  // 2 decimals
-
   if (gyro.value) {
     positionX.value = gyro.value.x - gyroXZero.value
     positionZ.value = gyro.value.y - gyroZZero.value
   }
 
-  // move ref gyroBall to the calculated position
-  // use transform: translate(x, y) to move the ball
-
   // map value from -1 to 1 to 0 to 192
-
   translateX.value = ((positionX.value + 1) * 96).toFixed(0).toString()
   translateY.value = ((positionZ.value + 1) * 96).toFixed(0).toString()
   translateY
@@ -81,26 +67,22 @@ const calculatePosition = () => {
 
 // function to calibrate the position
 // use the current position as the new zero position
-
 const calibrate = () => {
   gyroXZero.value = gyro.value.x
   gyroZZero.value = gyro.value.y
 }
 
-// listen to space bar to calibrate the position
-// use onMounted and onUnmounted to start and stop the event listener
-
 onMounted(() => {
   setInterval(calculatePosition, 100)
 
+  // listen to space bar to calibrate the position
   window.addEventListener('keydown', e => {
     if (e.code === 'Space') {
       calibrate()
     }
   })
 
-  // get url value from the url
-  // use onMounted and onUnmounted to start and stop the event listener
+  // get url value from the url params
   const url = window.location.href
   const urlParams = new URL(url)
   gameUrl.value = urlParams.searchParams.get('game')!
