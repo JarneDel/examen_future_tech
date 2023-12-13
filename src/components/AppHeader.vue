@@ -8,13 +8,15 @@ const user = useLocalStorage('user', '')
 
 <template>
   <header>
+    <RouterLink to="/">
       <h1>Game</h1>
-      <div>
-        <p>Hi {{ user }}</p>
-        <RouterLink to="'/select-user">
-          Select user
-        </RouterLink>
-      </div>
+    </RouterLink>
+    <div class="flex flex-row gap-4 items-center">
+      <p>Hi {{ user }}</p>
+      <RouterLink to="/select-user" class="user-select">
+        Switch user
+      </RouterLink>
+    </div>
   </header>
 </template>
 
@@ -28,26 +30,12 @@ header {
   @apply flex justify-between items-center flex-row left-0 right-0;
 }
 
-header div{
-  @apply flex justify-between items-center flex-row w-max;
-
-}
-
-a{
+.user-select {
   color: #fff;
+  padding: .5rem 1rem;
   text-decoration: none;
-  padding: 0.5rem 0 0.5rem 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid #ccc;
-  width: 100%;
-  display: block;
 }
-
-p {
-  margin-right: 1rem;
-  width: 100%;
-  display: block;
-}
-
 
 </style>
