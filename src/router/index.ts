@@ -11,6 +11,12 @@ const router = createRouter({
       
       
     },
+    {
+        path: '/maze',
+        component: () => import('../views/maze.vue'),
+        
+        
+      },
     
     {
       path: '/:pathMatch(.*)*',
