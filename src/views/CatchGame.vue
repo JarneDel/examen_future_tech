@@ -168,7 +168,7 @@ watch(
       const time = (endTimer - startTimer.value) / 1000
 
       // update user score
-      updateUser({ name: user.value, catchScore: 5, catchTime: time })
+      updateUser({ name: user.value, catchScore: 5, catchTime: time, mazeTime: -1 })
 
       push('/')
     }

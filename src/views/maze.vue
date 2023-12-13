@@ -156,7 +156,7 @@
             time4.value = currentTime.value;
         }
         const totaltime = ref(time1.value + time2.value + time3.value + time4.value);
-        updateUser({ name: user.value, catchScore: user.value, catchTime: user.value, mazeTime: totaltime.value})
+        updateUser({ name: user.value, catchScore: -1, catchTime: -1, mazeTime: totaltime.value})
         width.value = width.value + 6  ; // Example formula
         height.value = height.value + 6 ; // Example formula
         maze.value = createMaze(width.value, height.value);
