@@ -12,11 +12,13 @@
     "@rollup/rollup-win32-x64-msvc": "^4.9.0",
     "@types/vue-router": "^2.0.0",
     "firebase": "^10.7.1",
+    "lodash": "^4.17.21",
     "lucide-vue-next": "^0.294.0",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.202",
     "@types/vue-router": "^2.0.0",
     "@types/web-bluetooth": "^0.0.20",
     "@vitejs/plugin-vue": "^4.5.2",
