@@ -4,12 +4,14 @@ import { ref } from 'vue'
 const NAME_PREFIX = 'Squ'
 // const CHARACTERISTIC_UUID = '19b10000-1001-537e-4f6c-d104768a1214' // test characteristic
 const CHARACTERISTIC_UUID = '19b10000-5001-537e-4f6c-d104768a1214'
+const pressureCharacteristicUUID = '19b10000-a001-537e-4f6c-d104768a1214'
 // const SERVICE_UUID = '19b10000-5001-537e-4f6c-d104768a1214'
 const SERVICE_UUID = '19b10000-0000-537e-4f6c-d104768a1214'
 const device = ref<BluetoothDevice>()
 const server = ref<BluetoothRemoteGATTServer>()
 const primaryService = ref<BluetoothRemoteGATTService>()
 const characteristic = ref<BluetoothRemoteGATTCharacteristic>()
+const pressureCharacteristic = ref<BluetoothRemoteGATTCharacteristic>()
 
 export interface vec3 {
   x: number
@@ -19,7 +21,8 @@ export interface vec3 {
 
 const acc = ref<vec3>({ x: 0, y: 0, z: 0 })
 const gyro = ref<vec3>({ x: 0, y: 0, z: 0 })
-const mag = ref<vec3  >({ x: 0, y: 0, z: 0 })
+const mag = ref<vec3>({ x: 0, y: 0, z: 0 })
+const pressure = ref<number>(0)
 
 
 const getDevice = async (): Promise<BluetoothDevice> => {
@@ -29,7 +32,7 @@ const getDevice = async (): Promise<BluetoothDevice> => {
     }],
     // optionalServices: [SERVICE_UUID]
     // acceptAllDevices: true,
-    optionalServices: [SERVICE_UUID],
+    optionalServices: [SERVICE_UUID, pressureCharacteristicUUID],
   })
   return device.value
 }
@@ -64,6 +67,7 @@ const getPrimaryService = async (): Promise<BluetoothRemoteGATTService> => {
   return service
 }
 
+
 const readCharacteristic = async (): Promise<BluetoothRemoteGATTCharacteristic> => {
   if (!primaryService.value) {
     await getPrimaryService()
@@ -72,15 +76,20 @@ const readCharacteristic = async (): Promise<BluetoothRemoteGATTCharacteristic> 
     throw new Error('No service found')
   }
   characteristic.value = await primaryService.value.getCharacteristic(CHARACTERISTIC_UUID)
+  pressureCharacteristic.value = await primaryService.value.getCharacteristic(pressureCharacteristicUUID)
   return characteristic.value
 }
 
 const enableNotifications = async () => {
   const c = await readCharacteristic()
   await c.startNotifications()
+  if (!pressureCharacteristic.value) {
+    throw new Error('No characteristic found')
+  }
+  await pressureCharacteristic.value.startNotifications()
 }
 
-const listen = async (cb: (gyro: vec3 , acc: vec3, mag: vec3) => void) => {
+const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pressure: number) => void) => {
   if (!characteristic.value) {
     await readCharacteristic()
   }
@@ -105,7 +114,23 @@ const listen = async (cb: (gyro: vec3 , acc: vec3, mag: vec3) => void) => {
     mag.value.y = dataView.getFloat32(28, true)
     mag.value.z = dataView.getFloat32(32, true)
     cb(gyro.value, acc.value, mag.value)
+
   })
+  if (!pressureCharacteristic.value) {
+    throw new Error('No characteristic found')
+  }
+  pressureCharacteristic.value.addEventListener('characteristicvaluechanged', (event) => {
+    const dataView = (event.target as BluetoothRemoteGATTCharacteristic).value
+    if (!dataView) {
+      return
+    }
+    // pressure
+    pressure.value = dataView.getFloat32(0, true)
+    cb2(pressure.value)
+
+    // gyro
+  })
+
 }
 
 
@@ -123,5 +148,6 @@ export const useBle = () => {
     gyro,
     acc,
     mag,
+    pressure,
   }
 }
