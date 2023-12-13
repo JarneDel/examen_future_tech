@@ -84,7 +84,7 @@ const isFetching = ref(false)
             </span></h3>
           <p class="text-gray-600">{{ game.description }}</p>
           <p class="mt-2">Duration: {{ parseDuration(game.duration) }} </p>
-          <p>Highscore: {{ game.recordDuration }}</p>
+          <p>Highscore: {{ parseDuration(game.recordDuration) }}</p>
         </RouterLink>
         <div v-else-if="isFetching">
           <h2 class="text-2xl font-bold mb-2">Loading...</h2>

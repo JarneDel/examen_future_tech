@@ -4,12 +4,15 @@ import {
   getFirestore,
   collection,
   addDoc,
+  doc,
+  updateDoc,
   DocumentData,
   QueryDocumentSnapshot,
   getDocs,
 } from 'firebase/firestore'
 import { Game } from '../interfaces/game.interface'
 import { User } from '../interfaces/user.ts'
+import { useLocalStorage } from '@vueuse/core'
 
 // Initialize Firebase
 const app = initializeApp({
@@ -25,6 +28,7 @@ const db = getFirestore(app)
 
 const docRef = collection(db, 'games')
 const userRef = collection(db, 'users')
+const userId = useLocalStorage("userId", "")
 
 
 const getUsers = async (): Promise<User[]> => {
@@ -47,8 +51,9 @@ const getUsers = async (): Promise<User[]> => {
 const addUser = async (user: User): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     await addDoc(userRef, user)
-      .then(() => {
+      .then((res) => {
         console.log('User added')
+        userId.value = res.id
         resolve()
       })
       .catch((error: Error): void => {
@@ -58,18 +63,17 @@ const addUser = async (user: User): Promise<void> => {
   })
 }
 
-const updateUser = async (user: User): Promise<void> => {
-  return new Promise(async (resolve, reject) => {
-    await addDoc(userRef, user)
-      .then(() => {
-        console.log('User added')
-        resolve()
-      })
-      .catch((error: Error): void => {
-        console.error('Error adding user: ', error)
-        reject(error)
-      })
-  })
+const updateUser = async (game: Partial<Game>): Promise<void> => {
+  const gameRef = doc(db, 'games', userId.value)
+
+  return updateDoc(gameRef, game)
+    .then(() => {
+      console.log('Game updated')
+    })
+    .catch((error: Error) => {
+      console.error('Error updating game: ', error)
+      throw error
+    })
 }
 
 
