@@ -8,7 +8,7 @@ import AppHeader from './components/AppHeader.vue'
 
 <template>
   <AppHeader/>
-  <div class="mt-20">
+  <div class="mt-[74px]">
   <RouterView />
 
   </div>

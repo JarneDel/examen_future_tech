@@ -87,7 +87,7 @@ div.container {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: calc(100vh - 106px);
 }
 
 .container h1 {
