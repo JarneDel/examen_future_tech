@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import useLocalstorage from '../composables/useLocalstorage.ts'
+const { user }  = useLocalstorage()
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,5 +41,14 @@ const router = createRouter({
     },
   ],
 })
+
+router.beforeEach((to, _from, next) => {
+  if (to.path !== '/select-user' && !user.value) {
+    next('/select-user')
+  } else {
+    next()
+  }
+})
+
 
 export default router
