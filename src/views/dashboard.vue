@@ -12,6 +12,14 @@ const games = ref([
     duration: 0,
     score: 0,
   },
+  {
+    url: "/catch-game",
+    name: "Catch Game",
+    description: "A simple catch game.",
+    id: 2,
+    duration: 0,
+    score: 0,
+  }
 
 
 ])
@@ -63,9 +71,6 @@ const addMazeGame = () => {
 
 
 <template>
-  <h1>Dashboard</h1>
-
-  <button @click="addMazeGame">Add game</button>
   <div class="container mx-auto p-4">
     <div>
       <h2 class="text-2xl font-bold mb-2">All Games:</h2>
