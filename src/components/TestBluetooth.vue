@@ -10,19 +10,6 @@ const activate = async () => {
       console.log(pressure)
     })
   })
-  // const service = await getPrimaryService()
-  // console.log(service)
-  // if (service){
-  //   setInterval(async () => {
-  //     const characteristic = await readCharacteristic()
-  //     characteristic.startNotifications().then(value => {
-  //       value.readValue().then(value => {
-  //         console.log(value)
-  //       })
-  //     })
-  //   }, 1000)
-  // }
-
 }
 </script>
 

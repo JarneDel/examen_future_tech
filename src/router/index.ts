@@ -8,6 +8,12 @@ const router = createRouter({
       component: () => import('../views/dashboard.vue'),
     },
     {
+      path: '/maze',
+      component: () => import('../views/maze.vue'),
+
+    },
+    
+    {
       path: '/onboarding',
       component: () => import('../views/onboarding.vue'),
     },
