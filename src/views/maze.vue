@@ -1,23 +1,48 @@
 <template>
-    <div class="flex flex-col justify-center items-center">
-        <div id="maze_container" class="maze-container"></div>
-        <div v-if="hasWon == true">You Won</div>
-        <div>Level: {{ currentLevel }}</div>
-        <div v-if="time1">Time level 1: {{ time1 }} seconds</div>
-        <div v-if="time2">Time level 2: {{ time2 }} seconds</div>
-        <div v-if="time3">Time level 3: {{ time3 }} seconds</div>
-        <div v-if="time4">Time level 4: {{ time4 }} seconds</div>
-        <div>Time Elapsed: {{ currentTime }} seconds</div>
+    <div class="flex flex-col justify-center items-center pt-10">
         
-        
-        <button v-if="state == 'connected'" v-on:click="start()" class="bg-blue-500 flex  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">start</button>
-        <div v-else>make sure you are connected to a squeezi first!</div>
+        <h1 class="text-4xl font-bold mb-5">Maze</h1>
+        <div class="flex justify-center items-center w-full mb-4">
+            <div class="flex justify-center items-center mr-4">
+            <div class="maze-cell player"></div>
+            <p class="ml-2">You</p>
+            </div>
+            <div class="flex justify-center items-center">
+                <div class="maze-cell wall"></div>
+            <p class="ml-2">Wall</p>
+            </div>
+            <div class="flex justify-center items-center ml-4">
+            <div class="maze-cell door exit"></div>
+            <p class="ml-2">Food</p>
+            </div>
+        </div>
+      <div id="maze_container" class="maze-container">
+        <div v-for="(row, rowIndex) in maze" :key="rowIndex" class="maze-row">
+          <div v-for="(cell, cellIndex) in row" :key="cellIndex" class="maze-cell" :class="cell"></div>
+        </div>
+      </div>
+      
+      <div v-if="hasWon == true">You Won</div>
+      <div>Level: {{ currentLevel }}</div>
+      <div>Time Elapsed: {{ currentTime }} seconds</div>
+      <button v-if="state == 'connected'" @click="start" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">start</button>
+      <div v-else>make sure you are connected to a squeezi first!</div>
+      <div class="m-10">
+        <div v-if="time1"><strong>Time level 1:</strong> {{ time1 }} seconds</div>
+        <div v-if="time2"><strong>Time level 2:</strong> {{ time2 }} seconds</div>
+        <div v-if="time3"><strong>Time level 3:</strong> {{ time3 }} seconds</div>
+        <div v-if="time4"><strong>Time level 4:</strong> {{ time4 }} seconds</div>
+      </div>
     </div>
   </template>
   
   <script setup lang="ts">
   import { onMounted, reactive, ref, watch } from 'vue';
   import { useBle } from '../composables/useBle'
+  import useFirebase from '../composables/useFirebase'
+  import useLocalStorage from '../composables/useLocalstorage';
+  const { user } = useLocalStorage()
+  const { updateUser } = useFirebase()
 
     const { gyro, state } = useBle()
 
@@ -95,26 +120,7 @@
     return maze;
   }
   
-  function displayMaze(maze: string[][], containerId: string): void {
-    const container = document.getElementById(containerId);
-    if (!container) {
-      console.error(`Element with id "${containerId}" not found.`);
-      return;
-    }
   
-    container.innerHTML = '';
-  
-    maze.forEach(row => {
-      const rowDiv = document.createElement('div');
-      rowDiv.classList.add('maze-row');
-      row.forEach(cell => {
-        const cellDiv = document.createElement('div');
-        cellDiv.classList.add('maze-cell', ...cell.split(' '));
-        rowDiv.appendChild(cellDiv);
-      });
-      container.appendChild(rowDiv);
-    });
-  }
   
   const width = ref(15);
   const height = ref(15);
@@ -135,6 +141,7 @@
 
     function updateLevel() {
 
+        
         currentLevel.value++;
         if(currentLevel.value == 2){
             time1.value = currentTime.value;
@@ -148,12 +155,13 @@
         if(currentLevel.value == 5){
             time4.value = currentTime.value;
         }
-        
+        const totaltime = ref(time1.value + time2.value + time3.value + time4.value);
+        updateUser({ name: user.value, catchScore: -1, catchTime: -1, mazeTime: totaltime.value})
         width.value = width.value + 6  ; // Example formula
         height.value = height.value + 6 ; // Example formula
         maze.value = createMaze(width.value, height.value);
         resetPlayerPosition();
-        displayMaze(maze.value, 'maze_container');
+        
         start();
     }
 
@@ -205,7 +213,7 @@ function movePlayerWithBall(event: string) {
     movePlayer(1, 0);
       break;
   }
-  displayMaze(maze.value, 'maze_container');
+  
 }
 
 
@@ -219,7 +227,7 @@ function movePlayerWithBall(event: string) {
   }
   onMounted(() => {
     maze.value[player.y][player.x] = 'player';
-    displayMaze(maze.value, 'maze_container');
+    
     
     
   });
@@ -262,6 +270,7 @@ function movePlayerWithBall(event: string) {
                     radial-gradient(circle at 100% 0%, transparent 50%, rgba(0,0,0,0.1) 50%);
   background-size: 8em 8em;
   border: #454545;
+  
 }
 
 .maze-row {
@@ -293,9 +302,11 @@ function movePlayerWithBall(event: string) {
   
   .maze-cell.door.entrance {
     background-color: yellow;
+    
   }
   .maze-cell.player {
-    background-color: red;
+    background-color: blue;
+    
   }
   </style>
   
