@@ -55,6 +55,7 @@ const ballPosition = ref({ row: 4, col: 4 })
 const generateRandomPosition = () => {
   const row = Math.floor(Math.random() * gridSize)
   const col = Math.floor(Math.random() * gridSize)
+
   return { row, col }
 }
 
@@ -117,18 +118,18 @@ watch(
     const { x, y } = data.value.acc
 
     if (score.value < 5) {
-      if (y > 50) {
+      if (y > 100) {
         moveBall('left')
-        data.value.acc.y = 0
-      } else if (y < -50) {
+        data.value.acc.y = y
+      } else if (y < -100) {
         moveBall('right')
-        data.value.acc.y = 0
-      } else if (x > 50) {
+        data.value.acc.y = y
+      } else if (x > 75) {
         moveBall('up')
-        data.value.acc.x = 0
-      } else if (x < -50) {
+        data.value.acc.x = x
+      } else if (x < -75) {
         moveBall('down')
-        data.value.acc.x = 0
+        data.value.acc.x = x
       }
 
       if (
@@ -149,6 +150,8 @@ watch(
           score.value = 0
         }
       }
+    } else {
+      console.log('You win!')
     }
   },
   { deep: true },
