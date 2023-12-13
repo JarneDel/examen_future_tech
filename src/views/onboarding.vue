@@ -98,7 +98,7 @@
       <p>Test de bewegingen hier</p>
       <div ref="gyroContainer" class="w-48 h-48 relative">
         <div
-          ref="gyro"
+          ref="gyrox"
           class="w-full h-full bg-blue-50 rounded-md transition-transform"
         ></div>
         <div
