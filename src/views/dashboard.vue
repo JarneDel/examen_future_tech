@@ -56,7 +56,7 @@ const addMazeGame = () => {
 </script>
 
 <template>
-  <h1>Dashboard</h1>
+  <h1 class="pt-24">Dashboard</h1>
   <button @click="addMazeGame">Add game</button>
   <div class="container mx-auto p-4">
     <div>
