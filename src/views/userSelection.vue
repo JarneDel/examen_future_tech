@@ -65,8 +65,11 @@ const login = async () => {
           {{ user.name }}
         </option>
       </select>
+      <div class="or">
+        or
+      </div>
 
-      <input type="text" v-model="newUserName" placeholder="new username">
+      <input type="text" v-model="newUserName" placeholder="new user">
       <button type="submit"> submit</button>
     </form>
 
@@ -105,5 +108,29 @@ select {
   background-color: #fff;
 }
 
+input {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  background-color: #fff;
+}
+
+.or {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+
+}
+
+button[type="submit"] {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  @apply bg-blue-500 text-white;
+  cursor: pointer;
+}
 
 </style>
