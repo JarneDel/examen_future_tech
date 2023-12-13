@@ -37,15 +37,14 @@ const getDevice = async (): Promise<BluetoothDevice> => {
     })
     device.value?.addEventListener('gattserverdisconnected', () => {
       state.value = 'disconnected'
-    });
+    })
     device.value?.addEventListener('gattserverconnected', () => {
       state.value = 'connected'
-    });
+    })
     state.value = 'connected'
 
     return device.value
-  }
-  catch (e) {
+  } catch (e) {
     state.value = 'disconnected'
     throw e
   }
@@ -106,7 +105,7 @@ const enableNotifications = async () => {
   await pressureCharacteristic.value.startNotifications()
 }
 
-const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pressure: number) => void) => {
+const listen = async (cb?: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2?: (pressure: number) => void) => {
 
 
   if (!characteristic.value) {
@@ -132,7 +131,9 @@ const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pres
     mag.value.x = dataView.getFloat32(24, true)
     mag.value.y = dataView.getFloat32(28, true)
     mag.value.z = dataView.getFloat32(32, true)
-    cb(gyro.value, acc.value, mag.value)
+    if (cb) {
+      cb(gyro.value, acc.value, mag.value)
+    }
 
   })
   if (!pressureCharacteristic.value) {
@@ -145,7 +146,10 @@ const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pres
     }
     // pressure
     pressure.value = dataView.getFloat32(0, true)
-    cb2(pressure.value)
+    if (cb2) {
+      cb2(pressure.value)
+
+    }
 
     // gyro
   })
@@ -159,6 +163,14 @@ const disconnect = async () => {
   }
   device.value.gatt?.disconnect()
   state.value = 'disconnected'
+}
+
+const reconnect = async () => {
+  if (!device.value) {
+    return
+  }
+  device.value.gatt?.connect()
+  state.value = 'connected'
 }
 
 
@@ -178,6 +190,7 @@ export const useBle = () => {
     mag,
     pressure,
     state,
-    disconnect
+    disconnect,
+    reconnect
   }
 }

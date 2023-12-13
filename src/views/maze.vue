@@ -1,11 +1,26 @@
 <template>
-    <div id="maze_container" class="maze-container"></div>
-    <div v-if="hasWon == true">You Won</div>
+    <div class="flex flex-col justify-center items-center">
+        <div id="maze_container" class="maze-container"></div>
+        <div v-if="hasWon == true">You Won</div>
+        <div>Level: {{ currentLevel }}</div>
+        <div v-if="time1">Time level 1: {{ time1 }} seconds</div>
+        <div v-if="time2">Time level 2: {{ time2 }} seconds</div>
+        <div v-if="time3">Time level 3: {{ time3 }} seconds</div>
+        <div v-if="time4">Time level 4: {{ time4 }} seconds</div>
+        <div>Time Elapsed: {{ currentTime }} seconds</div>
+        
+        
+        <button v-if="state == 'connected'" v-on:click="start()" class="bg-blue-500 flex  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">start</button>
+        <div v-else>make sure you are connected to a squeezi first!</div>
+    </div>
   </template>
   
   <script setup lang="ts">
-  import { onMounted, onUnmounted, reactive, ref } from 'vue';
-  
+  import { onMounted, reactive, ref, watch } from 'vue';
+  import { useBle } from '../composables/useBle'
+
+    const { gyro, state } = useBle()
+
   function createMaze(width: number, height: number): string[][] {
     // Initialize maze with all walls
     const maze: string[][] = Array.from({ length: height }, () => new Array(width).fill('wall'));
@@ -106,6 +121,48 @@
   const maze = ref(createMaze(width.value, height.value));
   const hasWon = ref(false);
 
+  const startTime = ref(0);
+  const currentTime = ref(0);
+  const timer = ref();
+  const time1 = ref();
+  const time2 = ref();
+  const time3 = ref();
+  const time4 = ref();
+
+  const currentLevel = ref(1);
+
+  const start_ref = ref(false);
+
+    function updateLevel() {
+
+        currentLevel.value++;
+        if(currentLevel.value == 2){
+            time1.value = currentTime.value;
+        }
+        if(currentLevel.value == 3){
+            time2.value = currentTime.value;
+        }
+        if(currentLevel.value == 4){
+            time3.value = currentTime.value;
+        }
+        if(currentLevel.value == 5){
+            time4.value = currentTime.value;
+        }
+        
+        width.value = width.value + 6  ; // Example formula
+        height.value = height.value + 6 ; // Example formula
+        maze.value = createMaze(width.value, height.value);
+        resetPlayerPosition();
+        displayMaze(maze.value, 'maze_container');
+        start();
+    }
+
+    function resetPlayerPosition() {
+        player.x = width.value - 2;
+        player.y = height.value - 2;
+        maze.value[player.y][player.x] = 'player';
+    }
+
 const player = reactive({
   x: width.value -2, // initial x position of the entrance
   y: height.value - 2, // initial y position of the entrance (bottom row)
@@ -132,8 +189,9 @@ function movePlayer(dx: number, dy:number) {
   }
 }
 
-function handleKeyPress(event) {
-  switch (event.key) {
+
+function movePlayerWithBall(event: string) {
+  switch (event) {
     case 'ArrowUp':
     movePlayer(0, -1);
       break;
@@ -149,16 +207,46 @@ function handleKeyPress(event) {
   }
   displayMaze(maze.value, 'maze_container');
 }
-  
+
+
+
+  const start = () => {
+    startTime.value = Date.now();
+    timer.value = setInterval(() => {
+        currentTime.value = Math.floor((Date.now() - startTime.value) / 1000);
+    }, 1000);
+    start_ref.value = true;
+  }
   onMounted(() => {
     maze.value[player.y][player.x] = 'player';
     displayMaze(maze.value, 'maze_container');
-    window.addEventListener('keydown', handleKeyPress);
+    
+    
   });
 
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyPress);
+  watch(hasWon, (newVal) => {
+    if (newVal && currentLevel.value < 5) {
+        updateLevel();
+        hasWon.value = false;
+        clearInterval(timer.value);
+    }
     });
+  
+ 
+  watch(gyro, () => { 
+    if(start_ref.value == true){
+        const { x, y } = gyro.value
+        console.log(x, y)
+
+        if (x < -0.40) movePlayerWithBall('ArrowLeft')
+        else if (x > 0.40) movePlayerWithBall('ArrowRight')
+        else if (y > 0.40) movePlayerWithBall('ArrowDown')
+        else if (y < -0.40) movePlayerWithBall('ArrowUp') 
+        //   console.log(data.value) 
+    }
+}, { deep: true })
+
+  
   </script>
     
   <style>
