@@ -10,7 +10,4 @@ import AppFooter from './components/AppFooter.vue'
   <AppFooter/>
 </template>
 
-<style scoped>
 
-
-</style>
