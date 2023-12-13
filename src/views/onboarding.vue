@@ -62,7 +62,6 @@ const calculatePosition = () => {
   // map value from -1 to 1 to 0 to 192
   translateX.value = ((positionX.value + 1) * 96).toFixed(0).toString()
   translateY.value = ((positionZ.value + 1) * 96).toFixed(0).toString()
-  translateY
 }
 
 // function to calibrate the position
