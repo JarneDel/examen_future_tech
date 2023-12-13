@@ -1,9 +1,9 @@
 <template>
   <div
-    class="m-auto w-1/2 mt-60 flex flex-col items-center justify-center gap-6"
+    class="m-auto w-1/2 h-screen flex flex-col items-center justify-center gap-6"
   >
-    <h1 class="text-3xl font-bold underline">Doolhof</h1>
-    <p>
+    <h1 class="text-3xl font-bold underline">Besturing</h1>
+    <p class="w-2/3">
       Draai je hand naar voor ⬆️, achter ⬇️, links ⬅️ en rechts ➡️ om het spel
       te besturen
     </p>
@@ -18,9 +18,10 @@
         class="absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
         :style="`left: ${translateX}px; top: ${translateY}px`"
       ></div>
-      <p>{{ positionX.toFixed(2) }}</p>
-      <p>{{ positionZ.toFixed(2) }}</p>
-      <button @click="">Calibrate</button>
+      <!-- <button @click="">Calibrate</button> -->
+      <button class="w-full bg-blue-500 rounded-md py-2 text-white mt-12">
+        Speel
+      </button>
     </div>
   </div>
 </template>
@@ -61,14 +62,11 @@ const calculatePosition = () => {
 
   translateX.value = ((positionX.value + 1) * 96).toFixed(0).toString()
   translateY.value = ((positionZ.value + 1) * 96).toFixed(0).toString()
-
-  console.log(translateX.value)
   translateY
 }
 
 // function to calibrate the position
 // use the current position as the new zero position
-// use a button to call the function
 
 const calibrate = () => {
   gyroXZero.value = gyro.value.x
