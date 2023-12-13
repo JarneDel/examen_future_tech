@@ -1,5 +1,6 @@
 export interface User {
   name: string
-  mazeScore: number,
-  mazeShortestTime: number ,
+
+  catchScore: number
+  catchTime: number
 }
