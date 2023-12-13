@@ -26,6 +26,7 @@ header {
   color: #fff;
   padding: 1rem;
   position: fixed;
+  top: 0;
 
   @apply flex justify-between items-center flex-row left-0 right-0;
 }
