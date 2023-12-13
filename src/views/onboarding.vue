@@ -100,7 +100,6 @@
       <p>Test de bewegingen hier</p>
       <div ref="gyroContainer" class="w-48 h-48 relative">
         <div
-          
           class="w-full h-full bg-blue-50 rounded-md transition-transform"
         ></div>
         <div
@@ -117,10 +116,11 @@
       </div>
     </div>
   </div>
-  <div v-else class="right-height flex items-center justify-center flex-col gap-4">
-    <p class="error">
-      Please connect to the squeezie first
-    </p>
+  <div
+    v-else
+    class="right-height flex items-center justify-center flex-col gap-4"
+  >
+    <p class="error">Please connect to the squeezie first</p>
     <button @click="turnOn" class="connectbutton">connect</button>
   </div>
 </template>
