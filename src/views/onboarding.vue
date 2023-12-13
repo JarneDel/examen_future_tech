@@ -1,12 +1,14 @@
 <template>
   <div
+    v-if="state == 'connected'"
     class="m-auto w-1/2 right-height flex flex-col items-center justify-start pt-24 gap-6"
   >
     <RouterLink to="/" class="w-full">
       <button
         class="w-fit px-4 py-2 bg-black rounded-md flex items-center text-white"
       >
-        <ArrowLeft /> Back
+        <ArrowLeft />
+        Back
       </button>
     </RouterLink>
     <h1 class="text-3xl font-bold underline">Besturing</h1>
@@ -98,7 +100,6 @@
       <p>Test de bewegingen hier</p>
       <div ref="gyroContainer" class="w-48 h-48 relative">
         <div
-          ref="gyrox"
           class="w-full h-full bg-blue-50 rounded-md transition-transform"
         ></div>
         <div
@@ -115,6 +116,13 @@
       </div>
     </div>
   </div>
+  <div
+    v-else
+    class="right-height flex items-center justify-center flex-col gap-4"
+  >
+    <p class="error">Please connect to the squeezie first</p>
+    <button @click="turnOn" class="connectbutton">connect</button>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -122,7 +130,13 @@ import { ref, onMounted } from 'vue'
 import { useBle } from '../composables/useBle'
 import { ArrowLeft } from 'lucide-vue-next'
 
-const { gyro } = useBle()
+const { gyro, state, enableNotifications, listen } = useBle()
+
+const turnOn = async () => {
+  enableNotifications().then(() => {
+    listen()
+  })
+}
 
 const positionX = ref(0)
 const positionZ = ref(0)
@@ -201,5 +215,17 @@ onMounted(() => {
 <style scoped>
 .right-height {
   height: calc(100vh - 106px);
+}
+.error {
+  color: red;
+  font-size: 1.5rem;
+}
+
+.connectbutton {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  padding-inline: 2rem;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 </style>
