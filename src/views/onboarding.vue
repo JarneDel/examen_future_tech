@@ -1,6 +1,6 @@
 <template>
   <div
-    class="m-auto w-1/2 h-screen flex flex-col items-center justify-center gap-6"
+    class="m-auto w-1/2 right-height flex flex-col items-center justify-center gap-6"
   >
     <RouterLink to="/" class="w-full">
       <button
@@ -89,3 +89,11 @@ onMounted(() => {
   console.log(gameUrl.value)
 })
 </script>
+
+
+<style scoped>
+.right-height{
+  height: calc(100vh - 106px);
+}
+
+</style>
