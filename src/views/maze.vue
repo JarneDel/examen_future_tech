@@ -4,8 +4,11 @@
   </template>
   
   <script setup lang="ts">
-  import { onMounted, onUnmounted, reactive, ref } from 'vue';
-  
+  import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+  import { useBle } from '../composables/useBle'
+
+    const { acc } = useBle()
+
   function createMaze(width: number, height: number): string[][] {
     // Initialize maze with all walls
     const maze: string[][] = Array.from({ length: height }, () => new Array(width).fill('wall'));
@@ -131,9 +134,27 @@ function movePlayer(dx: number, dy:number) {
      
   }
 }
+const data = ref({
+  gyro: {
+    x: 0,
+    y: 0,
+    z: 0,
+  },
+  acc: {
+    x: 0,
+    y: 0,
+    z: 0,
+  },
+  mag: {
+    x: 0,
+    y: 0,
+    z: 0,
+  },
+  pressure: 0,
+})
 
-function handleKeyPress(event) {
-  switch (event.key) {
+function movePlayerWithBall(event: string) {
+  switch (event) {
     case 'ArrowUp':
     movePlayer(0, -1);
       break;
@@ -149,16 +170,29 @@ function handleKeyPress(event) {
   }
   displayMaze(maze.value, 'maze_container');
 }
+
   
   onMounted(() => {
     maze.value[player.y][player.x] = 'player';
     displayMaze(maze.value, 'maze_container');
-    window.addEventListener('keydown', handleKeyPress);
+    
   });
+  
+ 
+  watch(acc, () => { 
+    
+        const { x, y } = acc.value
+        console.log(x, y)
 
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyPress);
-    });
+        if (y > 0.40) movePlayerWithBall('ArrowLeft')
+        else if (y < -0.40) movePlayerWithBall('ArrowRight')
+        else if (x > 0.40) movePlayerWithBall('ArrowDown')
+        else if (x < -0.40) movePlayerWithBall('ArrowUp') 
+        //   console.log(data.value) 
+        
+}, { deep: true })
+
+  
   </script>
     
   <style>
