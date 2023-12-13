@@ -15,7 +15,7 @@
       <p class="ml-2">Dangerous</p>
     </div>
     <div class="flex justify-center items-center ml-4">
-      🍒
+      🐦
       <p class="ml-2">Food</p>
     </div>
   </div>
@@ -25,14 +25,22 @@
       <div
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        class="w-10 h-10 bg-gray-200 border border-gray-300 flex justify-center items-center relative"
+        class="w-20 h-20 border border-gray-300 flex justify-center items-center relative"
       >
-        <div
+        <!-- <div
           v-if="isBallPosition(rowIndex, colIndex)"
           class="w-4 h-4 bg-blue-700 rounded-full absolute"
-        ></div>
-        <div v-if="isRedBallPosition(rowIndex, colIndex)">💣</div>
-        <div v-if="isGreenBallPosition(rowIndex, colIndex)">🍒</div>
+        >
+      </div> -->
+        <div class="w-14 h-14" v-if="isBallPosition(rowIndex, colIndex)">
+          <img class="object-cover" src="/photo.png" alt="one piece" />
+        </div>
+        <div class="text-5xl" v-if="isRedBallPosition(rowIndex, colIndex)">
+          💣
+        </div>
+        <div class="text-5xl" v-if="isGreenBallPosition(rowIndex, colIndex)">
+          🐦
+        </div>
       </div>
     </div>
   </div>
