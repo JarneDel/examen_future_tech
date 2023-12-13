@@ -47,7 +47,7 @@ import { useBle } from '../composables/useBle'
 import { useRouter } from 'vue-router'
 import useFirebase from '../composables/useFirebase'
 import useLocalStorage from '../composables/useLocalstorage'
-const { acc, gyro, pressure } = useBle()
+const { acc, pressure } = useBle()
 const { push } = useRouter()
 const { updateUser } = useFirebase()
 const { user } = useLocalStorage()
@@ -80,7 +80,6 @@ const data = ref({
       z: roundValue(acc.value.z),
     }
   }),
-  gyro: computed(() => gyro.value || 0),
   pressure: computed(() => pressure.value || 0),
 })
 
@@ -168,7 +167,12 @@ watch(
       const time = (endTimer - startTimer.value) / 1000
 
       // update user score
-      updateUser({ name: user.value, catchScore: 5, catchTime: time, mazeTime: -1 })
+      updateUser({
+        name: user.value,
+        catchScore: 5,
+        catchTime: time,
+        mazeTime: -1,
+      })
 
       push('/')
     }

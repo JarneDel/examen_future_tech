@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 
-
 const NAME_PREFIX = 'Squ'
 // const CHARACTERISTIC_UUID = '19b10000-1001-537e-4f6c-d104768a1214' // test characteristic
 const CHARACTERISTIC_UUID = '19b10000-5001-537e-4f6c-d104768a1214'
@@ -25,14 +24,15 @@ const mag = ref<vec3>({ x: 0, y: 0, z: 0 })
 const pressure = ref<number>(0)
 const state = ref<'disconnected' | 'connecting' | 'connected'>('disconnected')
 
-
 const getDevice = async (): Promise<BluetoothDevice> => {
   try {
     state.value = 'connecting'
     device.value = await navigator.bluetooth.requestDevice({
-      filters: [{
-        namePrefix: NAME_PREFIX,
-      }],
+      filters: [
+        {
+          namePrefix: NAME_PREFIX,
+        },
+      ],
       optionalServices: [SERVICE_UUID, pressureCharacteristicUUID],
     })
     device.value?.addEventListener('gattserverdisconnected', () => {
@@ -48,7 +48,6 @@ const getDevice = async (): Promise<BluetoothDevice> => {
     state.value = 'disconnected'
     throw e
   }
-
 }
 
 const getBluetoothServer = async (): Promise<BluetoothRemoteGATTServer> => {
@@ -67,7 +66,6 @@ const getBluetoothServer = async (): Promise<BluetoothRemoteGATTServer> => {
   }
   server.value = s
 
-
   return s
 }
 
@@ -83,18 +81,22 @@ const getPrimaryService = async (): Promise<BluetoothRemoteGATTService> => {
   return service
 }
 
-
-const readCharacteristic = async (): Promise<BluetoothRemoteGATTCharacteristic> => {
-  if (!primaryService.value) {
-    await getPrimaryService()
+const readCharacteristic =
+  async (): Promise<BluetoothRemoteGATTCharacteristic> => {
+    if (!primaryService.value) {
+      await getPrimaryService()
+    }
+    if (!primaryService.value) {
+      throw new Error('No service found')
+    }
+    characteristic.value = await primaryService.value.getCharacteristic(
+      CHARACTERISTIC_UUID,
+    )
+    pressureCharacteristic.value = await primaryService.value.getCharacteristic(
+      pressureCharacteristicUUID,
+    )
+    return characteristic.value
   }
-  if (!primaryService.value) {
-    throw new Error('No service found')
-  }
-  characteristic.value = await primaryService.value.getCharacteristic(CHARACTERISTIC_UUID)
-  pressureCharacteristic.value = await primaryService.value.getCharacteristic(pressureCharacteristicUUID)
-  return characteristic.value
-}
 
 const enableNotifications = async () => {
   const c = await readCharacteristic()
@@ -105,16 +107,17 @@ const enableNotifications = async () => {
   await pressureCharacteristic.value.startNotifications()
 }
 
-const listen = async (cb?: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2?: (pressure: number) => void) => {
-
-
+const listen = async (
+  cb?: (gyro: vec3, acc: vec3, mag: vec3) => void,
+  cb2?: (pressure: number) => void,
+) => {
   if (!characteristic.value) {
     await readCharacteristic()
   }
   if (!characteristic.value) {
     throw new Error('No characteristic found')
   }
-  characteristic.value.addEventListener('characteristicvaluechanged', (event) => {
+  characteristic.value.addEventListener('characteristicvaluechanged', event => {
     const dataView = (event.target as BluetoothRemoteGATTCharacteristic).value
     if (!dataView) {
       return
@@ -136,28 +139,27 @@ const listen = async (cb?: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2?: (pr
     if (cb) {
       cb(gyro.value, acc.value, mag.value)
     }
-
   })
   if (!pressureCharacteristic.value) {
     throw new Error('No characteristic found')
   }
-  pressureCharacteristic.value.addEventListener('characteristicvaluechanged', (event) => {
-    const dataView = (event.target as BluetoothRemoteGATTCharacteristic).value
-    if (!dataView) {
-      return
-    }
-    // pressure
-    pressure.value = dataView.getFloat32(0, true)
-    if (cb2) {
-      cb2(pressure.value)
+  pressureCharacteristic.value.addEventListener(
+    'characteristicvaluechanged',
+    event => {
+      const dataView = (event.target as BluetoothRemoteGATTCharacteristic).value
+      if (!dataView) {
+        return
+      }
+      // pressure
+      pressure.value = dataView.getFloat32(0, true)
+      if (cb2) {
+        cb2(pressure.value)
+      }
 
-    }
-
-    // gyro
-  })
-
+      // gyro
+    },
+  )
 }
-
 
 const disconnect = async () => {
   if (!device.value) {
@@ -174,7 +176,6 @@ const reconnect = async () => {
   device.value.gatt?.connect()
   state.value = 'connected'
 }
-
 
 export const useBle = () => {
   return {
@@ -193,6 +194,6 @@ export const useBle = () => {
     pressure,
     state,
     disconnect,
-    reconnect
+    reconnect,
   }
 }
