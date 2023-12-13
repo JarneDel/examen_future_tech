@@ -16,11 +16,11 @@ const activate = async () => {
 
 <template>
   <footer class="footer flex justify-between items-center  bg-blue-400 text-white px-4">
-    <button @click="activate" v-if="state == 'disconnected'" class="flex flex-row text-white">
+    <button @click="activate" v-if="state == 'disconnected'" class="flex flex-row text-white gap-4">
       <BluetoothOff></BluetoothOff>
       Connect Squeezie
     </button>
-    <button @click="disable" v-else-if="state == 'connected'" class="flex flex-row text-white">
+    <button @click="disable" v-else-if="state == 'connected'" class="flex flex-row text-white gap-4">
       <Bluetooth></Bluetooth>
       Disconnect Squeezie
     </button>
