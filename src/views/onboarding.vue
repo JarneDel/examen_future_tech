@@ -4,8 +4,8 @@
   >
     <h1 class="text-3xl font-bold underline">Doolhof</h1>
     <p>
-      Beweeg je hand naar boven ⬆️, beneden ⬇️, links ⬅️ en rechts ➡️ om het
-      spel te besturen
+      Draai je hand naar voor ⬆️, achter ⬇️, links ⬅️ en rechts ➡️ om het spel
+      te besturen
     </p>
     <p>Test de bewegingen hier</p>
     <div ref="gyroContainer" class="w-48 h-48 relative">
@@ -14,10 +14,12 @@
         class="w-full h-full bg-blue-50 rounded-md transition-transform"
       ></div>
       <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
+        ref="gyroBall"
+        class="absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
+        :style="`left: ${translateX}px; top: ${translateY}px`"
       ></div>
-      <p>{{ positionX }}</p>
-      <p>{{ positionY }}</p>
+      <p>{{ positionX.toFixed(2) }}</p>
+      <p>{{ positionZ.toFixed(2) }}</p>
       <button @click="">Calibrate</button>
     </div>
   </div>
@@ -30,10 +32,13 @@ import { useBle } from '../composables/useBle'
 const { gyro } = useBle()
 
 const positionX = ref(0)
-const positionY = ref(0)
+const positionZ = ref(0)
 
 const gyroXZero = ref(0)
-const gyroYZero = ref(0)
+const gyroZZero = ref(0)
+
+const translateX = ref('left-1/2')
+const translateY = ref('top-1/2')
 
 // run function to calculate position from acc data (reset position with space)
 // use setInterval to run function every 100ms
@@ -44,9 +49,21 @@ const calculatePosition = () => {
   // when the device is moved, the position should change accordingly
   // when the device is moved back to the original position, the position should go back to the original position
   // consider gyroXZero and gyroYZero as the original position
+  // 2 decimals
 
   positionX.value = gyro.value.x - gyroXZero.value
-  positionY.value = gyro.value.y - gyroYZero.value
+  positionZ.value = gyro.value.y - gyroZZero.value
+
+  // move ref gyroBall to the calculated position
+  // use transform: translate(x, y) to move the ball
+
+  // map value from -1 to 1 to 0 to 192
+
+  translateX.value = ((positionX.value + 1) * 96).toFixed(0).toString()
+  translateY.value = ((positionZ.value + 1) * 96).toFixed(0).toString()
+
+  console.log(translateX.value)
+  translateY
 }
 
 // function to calibrate the position
@@ -55,7 +72,7 @@ const calculatePosition = () => {
 
 const calibrate = () => {
   gyroXZero.value = gyro.value.x
-  gyroYZero.value = gyro.value.y
+  gyroZZero.value = gyro.value.y
 }
 
 // listen to space bar to calibrate the position

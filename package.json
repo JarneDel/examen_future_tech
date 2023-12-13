@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rollup/rollup-darwin-x64": "^4.9.0",
     "firebase": "^10.7.1",
     "lucide-vue-next": "^0.294.0",
     "vue": "^3.3.11",
