@@ -3,4 +3,5 @@ export interface User {
 
   catchScore: number
   catchTime: number
+  mazeTime: number
 }
