@@ -1,6 +1,6 @@
 <template>
   <div
-    class="m-auto w-1/2 right-height flex flex-col items-center justify-center gap-6"
+    class="m-auto w-1/2 right-height flex flex-col items-center justify-start pt-24 gap-6"
   >
     <RouterLink to="/" class="w-full">
       <button
@@ -10,27 +10,109 @@
       </button>
     </RouterLink>
     <h1 class="text-3xl font-bold underline">Besturing</h1>
-    <p class="w-2/3">
-      Draai je hand naar voor ⬆️, achter ⬇️, links ⬅️ en rechts ➡️ om het spel
-      te besturen
-    </p>
-    <p>Test de bewegingen hier</p>
-    <div ref="gyroContainer" class="w-48 h-48 relative">
-      <div
-        ref="gyro"
-        class="w-full h-full bg-blue-50 rounded-md transition-transform"
-      ></div>
-      <div
-        ref="gyroBall"
-        class="absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
-        :style="`left: ${translateX}px; top: ${translateY}px`"
-      ></div>
-      <!-- <button @click="">Calibrate</button> -->
-      <RouterLink :to="gameUrl" class="w-full">
-        <button class="w-full bg-blue-500 rounded-md py-2 text-white mt-12">
-          Speel
-        </button>
-      </RouterLink>
+    <div class="flex flex-col items-center" v-if="calibrationStep == 0">
+      <h2>Draai je hand zo ver mogelijk naar links ⬅️</h2>
+      <div class="mt-6 relative w-48">
+        <div class="w-full h-2 bg-blue-100 rounded-full"></div>
+        <div
+          class="w-4 h-4 bg-green-500 absolute -top-1 rounded-full"
+          :style="`left: ${biggestLeft}px;`"
+        ></div>
+        <div
+          class="w-4 h-4 bg-blue-500 absolute -top-1 rounded-full"
+          :style="`left: ${translateX}px;`"
+        ></div>
+      </div>
+      <button
+        class="w-full bg-blue-500 rounded-md py-2 text-white mt-12"
+        @click="calibrationStep++"
+      >
+        Volgende
+      </button>
+    </div>
+    <div class="flex flex-col items-center" v-if="calibrationStep == 1">
+      <h2>Draai je hand zo ver mogelijk naar rechts ➡️</h2>
+      <div class="mt-6 relative w-48">
+        <div class="w-full h-2 bg-blue-100 rounded-full"></div>
+        <div
+          class="w-4 h-4 bg-green-500 absolute -top-1 rounded-full"
+          :style="`left: ${biggestRight}px;`"
+        ></div>
+        <div
+          class="w-4 h-4 bg-blue-500 absolute -top-1 rounded-full"
+          :style="`left: ${translateX}px;`"
+        ></div>
+      </div>
+      <button
+        class="w-full bg-blue-500 rounded-md py-2 text-white mt-12"
+        @click="calibrationStep++"
+      >
+        Volgende
+      </button>
+    </div>
+    <div class="flex flex-col items-center" v-if="calibrationStep == 2">
+      <h2>Draai je hand zo ver mogelijk naar boven ⬆️</h2>
+      <div class="mt-6 relative h-48">
+        <div class="h-full w-2 bg-blue-100 rounded-full"></div>
+        <div
+          class="w-4 h-4 bg-green-500 absolute -left-1 rounded-full"
+          :style="`top: ${biggestUp}px;`"
+        ></div>
+        <div
+          class="w-4 h-4 bg-blue-500 absolute -left-1 rounded-full"
+          :style="`top: ${translateY}px;`"
+        ></div>
+      </div>
+      <button
+        class="w-full bg-blue-500 rounded-md py-2 text-white mt-12"
+        @click="calibrationStep++"
+      >
+        Volgende
+      </button>
+    </div>
+    <div class="flex flex-col items-center" v-if="calibrationStep == 3">
+      <h2>Draai je hand zo ver mogelijk naar beneden ⬇️</h2>
+      <div class="mt-6 relative h-48">
+        <div class="h-full w-2 bg-blue-100 rounded-full"></div>
+        <div
+          class="w-4 h-4 bg-green-500 absolute -left-1 rounded-full"
+          :style="`top: ${biggestDown}px;`"
+        ></div>
+        <div
+          class="w-4 h-4 bg-blue-500 absolute -left-1 rounded-full"
+          :style="`top: ${translateY}px;`"
+        ></div>
+      </div>
+      <button
+        class="w-full bg-blue-500 rounded-md py-2 text-white mt-12"
+        @click="calibrationStep++"
+      >
+        Volgende
+      </button>
+    </div>
+    <div class="flex flex-col items-center gap-6" v-if="calibrationStep == 4">
+      <p class="w-2/3">
+        Draai je hand naar voor ⬆️, achter ⬇️, links ⬅️ en rechts ➡️ om het spel
+        te besturen
+      </p>
+      <p>Test de bewegingen hier</p>
+      <div ref="gyroContainer" class="w-48 h-48 relative">
+        <div
+          ref="gyro"
+          class="w-full h-full bg-blue-50 rounded-md transition-transform"
+        ></div>
+        <div
+          ref="gyroBall"
+          class="absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
+          :style="`left: ${translateX}px; top: ${translateY}px`"
+        ></div>
+        <!-- <button @click="">Calibrate</button> -->
+        <RouterLink :to="gameUrl" class="w-full">
+          <button class="w-full bg-blue-500 rounded-md py-2 text-white mt-12">
+            Speel
+          </button>
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
@@ -53,6 +135,13 @@ const translateY = ref('0')
 
 const gameUrl = ref('')
 
+const calibrationStep = ref(0)
+
+const biggestLeft = ref('96')
+const biggestRight = ref('96')
+const biggestUp = ref('96')
+const biggestDown = ref('96')
+
 const calculatePosition = () => {
   if (gyro.value) {
     positionX.value = gyro.value.x - gyroXZero.value
@@ -62,6 +151,26 @@ const calculatePosition = () => {
   // map value from -1 to 1 to 0 to 192
   translateX.value = ((positionX.value + 1) * 96).toFixed(0).toString()
   translateY.value = ((positionZ.value + 1) * 96).toFixed(0).toString()
+
+  if (parseInt(translateX.value) < parseInt(biggestLeft.value)) {
+    biggestLeft.value = translateX.value
+    console.log('left', biggestLeft.value)
+  }
+
+  if (parseInt(translateX.value) > parseInt(biggestRight.value)) {
+    biggestRight.value = translateX.value
+    console.log('right', biggestRight.value)
+  }
+
+  if (parseInt(translateY.value) < parseInt(biggestUp.value)) {
+    biggestUp.value = translateY.value
+    console.log('up', biggestUp.value)
+  }
+
+  if (parseInt(translateY.value) > parseInt(biggestDown.value)) {
+    biggestDown.value = translateY.value
+    console.log('down', biggestDown.value)
+  }
 }
 
 // function to calibrate the position
@@ -89,10 +198,8 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
-.right-height{
+.right-height {
   height: calc(100vh - 106px);
 }
-
 </style>
