@@ -23,7 +23,7 @@
   <div class="flex flex-col justify-center items-center mt-4">
     <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="flex">
       <div
-        v-for="(cell, colIndex) in row"
+        v-for="(_cell, colIndex) in row"
         :key="colIndex"
         class="w-20 h-20 border border-gray-300 flex justify-center items-center relative"
       >
