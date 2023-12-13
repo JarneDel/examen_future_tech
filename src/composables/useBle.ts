@@ -23,18 +23,33 @@ const acc = ref<vec3>({ x: 0, y: 0, z: 0 })
 const gyro = ref<vec3>({ x: 0, y: 0, z: 0 })
 const mag = ref<vec3>({ x: 0, y: 0, z: 0 })
 const pressure = ref<number>(0)
+const state = ref<'disconnected' | 'connecting' | 'connected'>('disconnected')
 
 
 const getDevice = async (): Promise<BluetoothDevice> => {
-  device.value = await navigator.bluetooth.requestDevice({
-    filters: [{
-      namePrefix: NAME_PREFIX,
-    }],
-    // optionalServices: [SERVICE_UUID]
-    // acceptAllDevices: true,
-    optionalServices: [SERVICE_UUID, pressureCharacteristicUUID],
-  })
-  return device.value
+  try {
+    state.value = 'connecting'
+    device.value = await navigator.bluetooth.requestDevice({
+      filters: [{
+        namePrefix: NAME_PREFIX,
+      }],
+      optionalServices: [SERVICE_UUID, pressureCharacteristicUUID],
+    })
+    device.value?.addEventListener('gattserverdisconnected', () => {
+      state.value = 'disconnected'
+    });
+    device.value?.addEventListener('gattserverconnected', () => {
+      state.value = 'connected'
+    });
+    state.value = 'connected'
+
+    return device.value
+  }
+  catch (e) {
+    state.value = 'disconnected'
+    throw e
+  }
+
 }
 
 const getBluetoothServer = async (): Promise<BluetoothRemoteGATTServer> => {
@@ -52,6 +67,8 @@ const getBluetoothServer = async (): Promise<BluetoothRemoteGATTServer> => {
     throw new Error('No service found')
   }
   server.value = s
+
+
   return s
 }
 
@@ -90,6 +107,8 @@ const enableNotifications = async () => {
 }
 
 const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pressure: number) => void) => {
+
+
   if (!characteristic.value) {
     await readCharacteristic()
   }
@@ -134,6 +153,15 @@ const listen = async (cb: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2: (pres
 }
 
 
+const disconnect = async () => {
+  if (!device.value) {
+    return
+  }
+  device.value.gatt?.disconnect()
+  state.value = 'disconnected'
+}
+
+
 export const useBle = () => {
   return {
     getDevice,
@@ -149,5 +177,7 @@ export const useBle = () => {
     acc,
     mag,
     pressure,
+    state,
+    disconnect
   }
 }
