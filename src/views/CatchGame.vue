@@ -27,11 +27,6 @@
         :key="colIndex"
         class="w-20 h-20 border border-gray-300 flex justify-center items-center relative"
       >
-        <!-- <div
-          v-if="isBallPosition(rowIndex, colIndex)"
-          class="w-4 h-4 bg-blue-700 rounded-full absolute"
-        >
-      </div> -->
         <div class="w-14 h-14" v-if="isBallPosition(rowIndex, colIndex)">
           <img class="object-cover" src="/photo.png" alt="one piece" />
         </div>
@@ -50,10 +45,15 @@
 import { ref, watch, computed } from 'vue'
 import { useBle } from '../composables/useBle'
 import { useRouter } from 'vue-router'
+import useFirebase from '../composables/useFirebase'
+import useLocalStorage from '../composables/useLocalstorage'
 const { acc, gyro, pressure } = useBle()
 const { push } = useRouter()
+const { updateUser } = useFirebase()
+const { user } = useLocalStorage()
 
 const score = ref(0)
+const startTimer = ref(new Date().getTime())
 
 const gridSize = 8
 const grid = ref(
@@ -161,6 +161,15 @@ watch(
       }
     } else {
       console.log('You win!')
+
+      const endTimer = new Date().getTime()
+
+      // total time in seconds
+      const time = (endTimer - startTimer.value) / 1000
+
+      // update user score
+      updateUser({ name: user.value, catchScore: 5, catchTime: time, mazeTime: -1 })
+
       push('/')
     }
   },
