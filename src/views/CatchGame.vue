@@ -1,18 +1,22 @@
 <template>
   <div class="flex justify-center items-center w-full">
     <h2 class="text-xl font-bold">Score: {{ score }}</h2>
-    <p v-if="score >= 15" class="ml-4 text-xl font-bold">You win!</p>
+    <p v-if="score >= 5" class="ml-4 text-xl font-bold">You win!</p>
   </div>
 
   <!-- Legenda -->
   <div class="flex justify-center items-center w-full mt-4">
     <div class="flex justify-center items-center mr-4">
       <div class="w-4 h-4 bg-blue-700 rounded-full"></div>
-      <p class="ml-2">Your ball</p>
+      <p class="ml-2">You</p>
     </div>
     <div class="flex justify-center items-center">
-      <div class="w-4 h-4 bg-red-700 rounded-full"></div>
-      <p class="ml-2">Get the ball</p>
+      💣
+      <p class="ml-2">Dangerous</p>
+    </div>
+    <div class="flex justify-center items-center ml-4">
+      🍒
+      <p class="ml-2">Food</p>
     </div>
   </div>
 
@@ -21,16 +25,14 @@
       <div
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        class="w-10 h-10 bg-gray-300 border border-gray-400 flex justify-center items-center relative"
+        class="w-10 h-10 bg-gray-200 border border-gray-300 flex justify-center items-center relative"
       >
         <div
           v-if="isBallPosition(rowIndex, colIndex)"
-          class="w-4 h-4 bg-blue-700 rounded-full"
+          class="w-4 h-4 bg-blue-700 rounded-full absolute"
         ></div>
-        <div
-          v-if="isRedBallPosition(rowIndex, colIndex)"
-          class="w-4 h-4 bg-red-700 rounded-full"
-        ></div>
+        <div v-if="isRedBallPosition(rowIndex, colIndex)">💣</div>
+        <div v-if="isGreenBallPosition(rowIndex, colIndex)">🍒</div>
       </div>
     </div>
   </div>
@@ -56,6 +58,7 @@ const generateRandomPosition = () => {
   return { row, col }
 }
 
+const greenBallPosition = ref(generateRandomPosition())
 const redBallPosition = ref(generateRandomPosition())
 
 const data = ref({
@@ -102,6 +105,9 @@ const moveBall = (direction: any) => {
 const isBallPosition = (row: any, col: any) =>
   row === ballPosition.value.row && col === ballPosition.value.col
 
+const isGreenBallPosition = (row: any, col: any) =>
+  row === greenBallPosition.value.row && col === greenBallPosition.value.col
+
 const isRedBallPosition = (row: any, col: any) =>
   row === redBallPosition.value.row && col === redBallPosition.value.col
 
@@ -110,7 +116,7 @@ watch(
   () => {
     const { x, y } = data.value.acc
 
-    if (score.value < 15) {
+    if (score.value < 5) {
       if (y > 50) {
         moveBall('left')
         data.value.acc.y = 0
@@ -125,14 +131,24 @@ watch(
         data.value.acc.x = 0
       }
 
-      // Check if the ball is caught and generate a new red ball position
+      if (
+        isBallPosition(greenBallPosition.value.row, greenBallPosition.value.col)
+      ) {
+        greenBallPosition.value = generateRandomPosition()
+        score.value += 1 // Add 1 point for catching a green ball
+      }
+
       if (
         isBallPosition(redBallPosition.value.row, redBallPosition.value.col)
       ) {
         redBallPosition.value = generateRandomPosition()
-        score.value++
+        if (score.value > 0) {
+          score.value -= 2 // Remove 1 point for catching a red ball
+        }
+        if (score.value < 0) {
+          score.value = 0
+        }
       }
-    } else {
     }
   },
   { deep: true },
