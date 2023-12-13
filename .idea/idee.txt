@@ -1,0 +1,18 @@
+bal als controller gebruiken
+oefeningen tonen op website interactief platform
+time/punten bijhouden
+grafiek van time/punten
+
+onboarding: testen ofda ze et kunnen
+dan spel
+
+oefeningen:
+    maze
+
+technologieën:
+    sqeezi
+    vue
+    BLE
+    mediapipe engine (eventueel)
+    3js (eventueel)
+    firestore db (eventueel)
