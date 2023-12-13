@@ -119,6 +119,8 @@ const listen = async (cb?: (gyro: vec3, acc: vec3, mag: vec3) => void, cb2?: (pr
     if (!dataView) {
       return
     }
+
+    console.log(gyro.value)
     // gyro
     gyro.value.x = dataView.getFloat32(0, true)
     gyro.value.y = dataView.getFloat32(4, true)
