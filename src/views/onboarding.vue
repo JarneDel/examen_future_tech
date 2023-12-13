@@ -1,40 +1,24 @@
 <template>
-  <div class="bg-red-500">
-    <h1 class="text-3xl font-bold underline">Welcome to our App!</h1>
-    <p>Start by calibrating your gyroscope:</p>
-    <div ref="gyroContainer" class="gyro-container">
-      <div ref="gyro" class="gyro"></div>
-      <div class="gyro-indicator"></div>
+  <div
+    class="m-auto w-1/2 mt-60 flex flex-col items-center justify-center gap-6"
+  >
+    <h1 class="text-3xl font-bold underline">Doolhof</h1>
+    <p>
+      Beweeg je hand naar boven ⬆️, beneden ⬇️, links ⬅️ en rechts ➡️ om het
+      spel te besturen
+    </p>
+    <p>Test de bewegingen hier</p>
+    <div ref="gyroContainer" class="w-48 h-48 relative">
+      <div
+        ref="gyro"
+        class="w-full h-full bg-blue-50 rounded-md transition-transform"
+      ></div>
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full"
+      ></div>
       <button @click="">Calibrate</button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup></script>
-
-<style scoped>
-.gyro-container {
-  width: 200px;
-  height: 200px;
-  position: relative;
-}
-
-.gyro {
-  width: 100%;
-  height: 100%;
-  background-color: #000;
-  border-radius: 50%;
-  transition: transform 0.1s ease;
-}
-
-.gyro-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
-  background-color: #f00;
-  border-radius: 50%;
-}
-</style>
