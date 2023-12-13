@@ -1,41 +1,35 @@
-<!-- CatchGame.vue -->
 <template>
-  <button
-    @click="activate"
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  >
-    Connect to the ball
-  </button>
+  <div class="flex justify-center items-center w-full">
+    <h2 class="text-xl font-bold">Score: {{ score }}</h2>
+    <p v-if="score >= 15" class="ml-4 text-xl font-bold">You win!</p>
+  </div>
 
-  <div class="grid grid-cols-3 gap-4 mt-4">
-    <div v-for="(value, key) in data.acc" :key="key">
-      <p>acc</p>
-      <h2 class="text-xl font-bold">{{ key }}</h2>
-      <p>{{ Math.round(value * 100) / 100 }}</p>
+  <!-- Legenda -->
+  <div class="flex justify-center items-center w-full mt-4">
+    <div class="flex justify-center items-center mr-4">
+      <div class="w-4 h-4 bg-blue-700 rounded-full"></div>
+      <p class="ml-2">Your ball</p>
     </div>
-    <div v-for="(value, key) in data.gyro" :key="key">
-      <p>gyro</p>
-      <h2 class="text-xl font-bold">{{ key }}</h2>
-      <p>{{ Math.round(value * 100) / 100 }}</p>
+    <div class="flex justify-center items-center">
+      <div class="w-4 h-4 bg-red-700 rounded-full"></div>
+      <p class="ml-2">Get the ball</p>
     </div>
   </div>
 
-  <div class="mt-4">
-    <h2 class="text-xl font-bold">Pressure:</h2>
-    <p>{{ Math.round(data.pressure * 100) / 100 }}</p>
-  </div>
-
-  <!-- Make a grid sysytem for a game -->
-  <div class="">
+  <div class="flex flex-col justify-center items-center mt-4">
     <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="flex">
       <div
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        class="w-10 h-10 bg-gray-300 border border-gray-400 flex justify-center items-center"
+        class="w-10 h-10 bg-gray-300 border border-gray-400 flex justify-center items-center relative"
       >
         <div
-          v-if="ballPosition.row === rowIndex && ballPosition.col === colIndex"
-          class="w-4 h-4 bg-red-500 rounded-full"
+          v-if="isBallPosition(rowIndex, colIndex)"
+          class="w-4 h-4 bg-blue-700 rounded-full"
+        ></div>
+        <div
+          v-if="isRedBallPosition(rowIndex, colIndex)"
+          class="w-4 h-4 bg-red-700 rounded-full"
         ></div>
       </div>
     </div>
@@ -43,96 +37,104 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useBle } from '../composables/useBle'
 
-const { enableNotifications, listen } = useBle()
+const { acc, gyro, pressure } = useBle()
 
-const grid = ref([
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-])
+const score = ref(0)
 
-const ballPosition = ref({ row: 2, col: 2 })
+const gridSize = 8
+const grid = ref(
+  Array.from({ length: gridSize }, () => Array(gridSize).fill(0)),
+)
+const ballPosition = ref({ row: 4, col: 4 })
 
-const data = ref({
-  gyro: {
-    x: 0,
-    y: 0,
-    z: 0,
-  },
-  acc: {
-    x: 0,
-    y: 0,
-    z: 0,
-  },
-  mag: {
-    x: 0,
-    y: 0,
-    z: 0,
-  },
-  pressure: 0,
-})
-
-const activate = async () => {
-  enableNotifications().then(() => {
-    listen(
-      (gyro, acc, mag) => {
-        data.value = {
-          ...data.value,
-          gyro,
-          acc,
-          mag,
-        }
-      },
-      pressure => {
-        data.value = {
-          ...data.value,
-          pressure,
-        }
-      },
-    )
-  })
+const generateRandomPosition = () => {
+  const row = Math.floor(Math.random() * gridSize)
+  const col = Math.floor(Math.random() * gridSize)
+  return { row, col }
 }
 
-const moveBall = (direction: string) => {
+const redBallPosition = ref(generateRandomPosition())
+
+const data = ref({
+  acc: computed(() => {
+    const roundValue = (value: number) => Math.round(value * 100)
+    return {
+      x: roundValue(acc.value.x),
+      y: roundValue(acc.value.y),
+      z: roundValue(acc.value.z),
+    }
+  }),
+  gyro: computed(() => gyro.value || 0),
+  pressure: computed(() => pressure.value || 0),
+})
+
+const moveBall = (direction: any) => {
+  const canMove = (row: any, col: any) =>
+    row >= 0 && row < gridSize && col >= 0 && col < gridSize
+
   switch (direction) {
     case 'up':
-      if (ballPosition.value.row > 0) {
+      if (canMove(ballPosition.value.row - 1, ballPosition.value.col)) {
         ballPosition.value.row--
       }
       break
     case 'down':
-      if (ballPosition.value.row < grid.value.length - 1) {
+      if (canMove(ballPosition.value.row + 1, ballPosition.value.col)) {
         ballPosition.value.row++
       }
       break
     case 'left':
-      if (ballPosition.value.col > 0) {
+      if (canMove(ballPosition.value.row, ballPosition.value.col - 1)) {
         ballPosition.value.col--
       }
       break
     case 'right':
-      if (ballPosition.value.col < grid.value[0].length - 1) {
+      if (canMove(ballPosition.value.row, ballPosition.value.col + 1)) {
         ballPosition.value.col++
       }
       break
   }
 }
 
-watch(data, () => {
-  //   console.log(data.value)
-  const { x, y } = data.value.acc
+const isBallPosition = (row: any, col: any) =>
+  row === ballPosition.value.row && col === ballPosition.value.col
 
-  // add a threshold
-  
+const isRedBallPosition = (row: any, col: any) =>
+  row === redBallPosition.value.row && col === redBallPosition.value.col
 
-  if (y > 0.5) moveBall('left')
-  else if (y < -0.5) moveBall('right')
-  else if (x > 0.5) moveBall('down')
-  else if (x < -0.5) moveBall('up')
-})
+watch(
+  data,
+  () => {
+    const { x, y } = data.value.acc
+
+    if (score.value < 15) {
+      if (y > 50) {
+        moveBall('left')
+        data.value.acc.y = 0
+      } else if (y < -50) {
+        moveBall('right')
+        data.value.acc.y = 0
+      } else if (x > 50) {
+        moveBall('up')
+        data.value.acc.x = 0
+      } else if (x < -50) {
+        moveBall('down')
+        data.value.acc.x = 0
+      }
+
+      // Check if the ball is caught and generate a new red ball position
+      if (
+        isBallPosition(redBallPosition.value.row, redBallPosition.value.col)
+      ) {
+        redBallPosition.value = generateRandomPosition()
+        score.value++
+      }
+    } else {
+    }
+  },
+  { deep: true },
+)
 </script>

@@ -5,9 +5,9 @@ const { enableNotifications, listen, state, disconnect: disable } = useBle()
 const activate = async () => {
   enableNotifications().then(() => {
     listen((gyro, acc, mag) => {
-      console.log(gyro, acc, mag)
+      // console.log(gyro, acc, mag)
     }, (pressure) => {
-      console.log(pressure)
+      // console.log(pressure)
     })
   })
 }
