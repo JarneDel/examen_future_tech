@@ -13,6 +13,11 @@ const router = createRouter({
     },
 
     {
+      path: '/firestore',
+      component: () => import('../views/Firestore.vue'),
+    },
+
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('../views/NotFound.vue'),
     },
