@@ -41,8 +41,9 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useBle } from '../composables/useBle'
-
+import { useRouter } from 'vue-router'
 const { acc, gyro, pressure } = useBle()
+const { push } = useRouter()
 
 const score = ref(0)
 
@@ -152,6 +153,7 @@ watch(
       }
     } else {
       console.log('You win!')
+      push('/')
     }
   },
   { deep: true },

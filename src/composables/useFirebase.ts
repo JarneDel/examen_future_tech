@@ -58,6 +58,22 @@ const addUser = async (user: User): Promise<void> => {
   })
 }
 
+const updateUser = async (user: User): Promise<void> => {
+  return new Promise(async (resolve, reject) => {
+    await addDoc(userRef, user)
+      .then(() => {
+        console.log('User added')
+        resolve()
+      })
+      .catch((error: Error): void => {
+        console.error('Error adding user: ', error)
+        reject(error)
+      })
+  })
+}
+
+
+
 
 // Add game
 const addGame = async (game: Game): Promise<void> => {
@@ -100,5 +116,6 @@ export default () => {
     allGames,
     getUsers,
     addUser,
+    updateUser,
   }
 }
