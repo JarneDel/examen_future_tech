@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { useBle } from '../composables/useBle.ts'
 import {Bluetooth, BluetoothOff} from 'lucide-vue-next'
-const { enableNotifications, listen, state, disconnect: disable } = useBle()
+const { enableNotifications, listen, device, state, disconnect: disable, reconnect } = useBle()
 const activate = async () => {
   enableNotifications().then(() => {
-    listen((gyro, acc, mag) => {
-      console.log(gyro, acc, mag)
-    }, (pressure) => {
-      console.log(pressure)
-    })
+    listen()
   })
 }
 
@@ -23,6 +19,9 @@ const activate = async () => {
     <button @click="disable" v-else-if="state == 'connected'" class="flex flex-row text-white gap-4">
       <Bluetooth></Bluetooth>
       Disconnect Squeezie
+    </button>
+    <button v-if="device && state == 'disconnected'" @click="reconnect">
+      reconnect
     </button>
     <span v-if="state === 'connected'">🟢 Connected</span>
     <span v-else-if="state === 'connecting'">🟠 Connecting</span>

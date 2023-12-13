@@ -9,6 +9,7 @@ import {
   getDocs,
 } from 'firebase/firestore'
 import { Game } from '../interfaces/game.interface'
+import { User } from '../interfaces/user.ts'
 
 // Initialize Firebase
 const app = initializeApp({
@@ -23,6 +24,40 @@ const app = initializeApp({
 const db = getFirestore(app)
 
 const docRef = collection(db, 'games')
+const userRef = collection(db, 'users')
+
+
+const getUsers = async (): Promise<User[]> => {
+  try {
+    const users: User[] = []
+    const querySnapshot = await getDocs(collection(db, 'users'))
+
+    querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+      users.push(doc.data() as User )
+    })
+
+    console.log('Users: ', users)
+    return users
+  } catch (error) {
+    console.error('Error getting users: ', error)
+    throw error
+  }
+}
+
+const addUser = async (user: User): Promise<void> => {
+  return new Promise(async (resolve, reject) => {
+    await addDoc(userRef, user)
+      .then(() => {
+        console.log('User added')
+        resolve()
+      })
+      .catch((error: Error): void => {
+        console.error('Error adding user: ', error)
+        reject(error)
+      })
+  })
+}
+
 
 // Add game
 const addGame = async (game: Game): Promise<void> => {
@@ -63,5 +98,7 @@ export default () => {
   return {
     addGame,
     allGames,
+    getUsers,
+    addUser,
   }
 }
